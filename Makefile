@@ -26,7 +26,7 @@ endif
 .PHONY: init add build test compile help
 
 init: $(PROJ_DIR) ## cobra init and creates this makefile and performs initial build (provide name of project ex: make init n=modulename)
-add: $@ ## cobra add new commands only (first level) For second level use cobra add 2ndlevelCMD -p 1stlevelCmd
+add: $@ ## cobra add new commands only (first level) For second level use cobra add 2ndlevelCMD -p 1stlevelCmd (provide name of command make add c=commandname)
 build: $@ ## Build only for this platform
 test: $@ ## Performs build and does generatedbinary -h
 compile: $@ ## Generating binary for every OS and Platform

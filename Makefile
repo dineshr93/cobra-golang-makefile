@@ -8,6 +8,19 @@ ifeq ($(OS),Windows_NT)
 	BINARY_NAME := ${BINARY_NAME}.exe
 endif
 
+ifeq ($(OS),Windows_NT)
+	SHELL := powershell.exe
+	.SHELLFLAGS := -NoProfile -Command
+	RM_F_CMD = Remove-Item -erroraction silentlycontinue -Force
+    RM_RF_CMD = ${RM_F_CMD} -Recurse
+	HELP_CMD = Select-String "^[a-zA-Z_-]+:.*?\#\# .*$$" "./Makefile" | Foreach-Object { $$_data = $$_.matches -split ":.*?\#\# "; $$obj = New-Object PSCustomObject; Add-Member -InputObject $$obj -NotePropertyName ('Command') -NotePropertyValue $$_data[0]; Add-Member -InputObject $$obj -NotePropertyName ('Description') -NotePropertyValue $$_data[1]; $$obj } | Format-Table -HideTableHeaders @{Expression={ $$e = [char]27; "$$e[36m$$($$_.Command)$${e}[0m" }}, Description
+else
+	SHELL := bash
+	RM_F_CMD = rm -f
+	RM_RF_CMD = ${RM_F_CMD} -r
+	HELP_CMD = grep -E '^[a-zA-Z_-]+:.*?\#\# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?\#\# "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+endif
+
 init:
 	echo "make init n=modulename"
 	mkdir -p ${n} && cd ${n} && go mod init github.com/dineshr93/${n} && cobra init --author "Dinesh Ravi dineshr93@gmail.com" --license Apache-2.0 && go build -o ./bin/${n} main.go && ./bin/${n} -h && cp ${ROOT_DIR}/Makefile .
@@ -34,3 +47,5 @@ test: build
 	./bin/${BINARY_NAME} -h
 
 
+help: ## Show this help
+	@${HELP_CMD}

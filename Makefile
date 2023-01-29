@@ -30,7 +30,7 @@ add: $@ ## cobra add new commands only (first level) For second level use cobra 
 build: $@ ## Build only for this platform
 test: $@ ## Performs build and does generatedbinary -h
 compile: $@ ## Generating binary for every OS and Platform
-
+copy: $@ ## Copy binary to desired environment path (please modify)
 
 init:
 	echo "make init n=modulename"
@@ -57,6 +57,8 @@ compile:
 test: build
 	./bin/${BINARY_NAME} -h
 
+copy: test
+        cp bin/${BINARY_NAME} /sw/bin/
 
 help: ## Show this help
 	@${HELP_CMD}

@@ -45,6 +45,7 @@ add:
 build:
 	echo "make build"
 	go build -o ./bin/${BINARY_NAME} main.go
+	cp ./bin/${BINARY_NAME} .
 
 compile:
 	echo "Generating binary for every OS and Platform"

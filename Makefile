@@ -21,6 +21,17 @@ else
 	HELP_CMD = grep -E '^[a-zA-Z_-]+:.*?\#\# .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?\#\# "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 endif
 
+
+.DEFAULT_GOAL := help
+.PHONY: init add build test compile help
+
+init: $(PROJ_DIR) ## cobra init  and creates this makefile and performs initial build
+add: $@ ## cobra add new commands only (first level) For second level use cobra add 2ndlevelCMD -p 1stlevelCmd
+build: $@ ## Build only for this platform
+test: $@ ## Performs build and does generatedbinary -h
+compile: $@ ## Generating binary for every OS and Platform
+
+
 init:
 	echo "make init n=modulename"
 	mkdir -p ${n} && cd ${n} && go mod init github.com/dineshr93/${n} && cobra init --author "Dinesh Ravi dineshr93@gmail.com" --license Apache-2.0 && go build -o ./bin/${n} main.go && ./bin/${n} -h && cp ${ROOT_DIR}/Makefile .
@@ -36,7 +47,7 @@ build:
 	go build -o ./bin/${BINARY_NAME} main.go
 
 compile:
-	echo "Compiling for every OS and Platform"
+	echo "Generating binary for every OS and Platform"
 	GOOS=freebsd GOARCH=386 go build -o bin/${BINARY_NAME}-freebsd-386 main.go
 	GOOS=linux GOARCH=386 go build -o bin/${BINARY_NAME}-linux-386 main.go
 	GOOS=windows GOARCH=386 go build -o bin/${BINARY_NAME}-windows-386.exe main.go
